@@ -11,7 +11,7 @@
 
 void* handle_connect(void* arg){
     int client_fd = *((int *)arg);
-    write_to_log("connection accepted", SRV_LOG_LVL);
+    write_to_log("Connection recieved", SRV_LOG_LVL);
     connection(client_fd);
     free(arg);
     return NULL;
@@ -37,17 +37,17 @@ int main(void){
     
     if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
         write_to_log("failed to bind to socket", SRV_LOG_LVL);
-        write_to_log("SYSTEM HAS FAILED TO START SEE webserver.log", 9);
+        write_to_log("SYSTEM HAS FAILED TO START EXITING", SRV_LOG_LVL);
         exit(1);
     }
 
     if (listen(server_fd, 10) < 0) {
         write_to_log("failed to start socket listener", SRV_LOG_LVL);
-        write_to_log("SYSTEM HAS FAILED TO START SEE webserver.log", 9);
+        write_to_log("SYSTEM HAS FAILED TO START EXITING", SRV_LOG_LVL);
         exit(1);
     }
     
-    write_to_log("listening for connections on http://localhost:9999", 9);
+    write_to_log("listening for connections on http://localhost:9999", SRV_LOG_LVL);
     while(1){
         struct sockaddr_in connect_addr;
         socklen_t connect_addr_len = sizeof(connect_addr);

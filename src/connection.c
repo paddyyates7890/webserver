@@ -13,13 +13,13 @@
 #include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <pthread.h>
 
 void connection(int fd){
     char* buffer = (char *)malloc(BUFFERSIZE * sizeof(char));
     ssize_t bytes_received = recv(fd, buffer, BUFFERSIZE, 0);
     
     if (bytes_received > 0) {
-        log_buffer(buffer);
         handle_http_request(buffer, fd);
     }else {
         handle_response_error("400 Bad Request", fd);
@@ -29,31 +29,30 @@ void connection(int fd){
     free(buffer);
 }
 
-void log_buffer(char *buffer){
-    write_to_log(buffer, ACCESS_LOG_LVL); 
-}
-
 void handle_http_request(char *buffer, int fd){
     regex_t regex;
     int value;
-    
-    char* pattern = "^[A-z]+ /([^ ]*) HTTP/1";
+    write_to_log(buffer, ACCESS_LOG_LVL); 
+    //char* pattern = "^[A-z]+ /([^ ]*) HTTP/1";
+    char* pattern = "([A-Z])[[:space:]]/(.+)HTTP/1.1[[:space:]]Host:(.*)[[:space:]][A-z !-@\n]+(User-Agent.+)";
     regcomp(&regex, pattern, REG_EXTENDED);
-    regmatch_t matches[2];
-    value = regexec(&regex, buffer, 2, matches, 0);  
+    regmatch_t matches[5];
+    value = regexec(&regex, buffer, 5, matches, 0);  
     
     if (value == 0) {
-        buffer[matches[1].rm_eo] = '\0';
-        //buffer[matches[2].rm_eo] = '\0';
-        char* request_method = "GET";//buffer + matches[1].rm_so;
-        char* file_requested = buffer + matches[1].rm_so;
+        char* request_method = buffer + matches[1].rm_so;
+        char* file_requested = buffer + matches[2].rm_so;
+        char* host = buffer + matches[3].rm_so;
+        char* user_agent = buffer + matches[4].rm_so;
+
+        debug("%s", request_method);
+        debug("%s", file_requested);
+        debug("%s", host);
+        debug("%s", user_agent);
 
         if (strcmp(file_requested, " ")) {
             file_requested = "index.html";
         }
-        
-        debug("%s", file_requested);
-        debug("%s", request_method);
 
         handle_response_sucess(file_requested, request_method, fd);
     }
@@ -82,12 +81,11 @@ void handle_response_sucess(char* requested_route, char* request_method,  int fd
     fstat(file_fd, &file_stat);
     off_t file_size = file_stat.st_size;
     
-    char* server = "patrick/0.01 (Ubuntu)";
+    char* server = "patrick/0.01";
     time_t t;time(&t);
     char* date = strtok(ctime(&t), "\n");
 
     snprintf(header, BUFFERSIZE, "HTTP/1.1 200 OK\r\nServer: %s\r\nDate: %s\r\nContent-size: %ld\r\nContent-Type: text/html\r\n\r\n", server, date, file_size);
-    write_to_log(header, ACCESS_LOG_LVL);
     
     int res_len = 0;
     memcpy(response, header, strlen(header));
@@ -104,10 +102,10 @@ void handle_response_sucess(char* requested_route, char* request_method,  int fd
 
 void handle_response_error(char* code, int fd){
     char* response = (char *)malloc(BUFFERSIZE * 2 * sizeof(char)); 
-    snprintf(response, BUFFERSIZE, "HTTP/1.1 %s\r\n Content-type: text/html\r\n\r\n<h1>%s</h1>", code, code);
+    snprintf(response, BUFFERSIZE, "HTTP/1.1 %s\r\n Content-type: text/html\r\n\r\n<div align='center'><h1>%s</h1></div>", code, code);
     send_response(fd, response, strlen(response));
 
-    return;
+    pthread_exit(NULL);
 }
 
 void send_response(int fd, char* response, int response_len){

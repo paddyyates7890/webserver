@@ -7,6 +7,7 @@
 
 void write_to_log(char *line, int log_level){
     int sysstatus = 0;
+    int debug = 1;
 
     if (sysstatus) {
         write_to_console(line);
@@ -19,7 +20,11 @@ void write_to_log(char *line, int log_level){
                 write_to_access_log(line);
                 break;
             case SRV_LOG_LVL:
-                write_to_srv_log(line);
+                if (debug) {
+                    write_to_console(line);
+                }else {
+                    write_to_srv_log(line);
+                }
                 break;
             default:
                 write_to_console(line);
@@ -28,7 +33,7 @@ void write_to_log(char *line, int log_level){
 }
 
 void write_to_error_log(char *line){
-    char* logHeader = " ERROR LOG:";
+    char* logHeader = " ERROR LOG: ";
     char log[512];
     build_log_text(log, line, logHeader);
     write_line(log, ERROR_LOG);
@@ -36,7 +41,7 @@ void write_to_error_log(char *line){
 
 
 void write_to_access_log(char *line){
-    char* logHeader = " ACCESS LOG:";
+    char* logHeader = " ACCESS LOG: ";
     char log[512];
     build_log_text(log, line, logHeader);
     write_line(log, ACCESS_LOG);
