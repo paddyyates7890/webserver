@@ -30,42 +30,94 @@ void connection(int fd){
 }
 
 void handle_http_request(char *buffer, int fd){
-    regex_t regex;
-    int value;
-    write_to_log(buffer, ACCESS_LOG_LVL); 
-    //char* pattern = "^[A-z]+ /([^ ]*) HTTP/1";
-    char* pattern = "([A-Z])[[:space:]]/(.+)HTTP/1.1[[:space:]]Host:(.*)[[:space:]][A-z !-@\n]+(User-Agent.+)";
-    regcomp(&regex, pattern, REG_EXTENDED);
-    regmatch_t matches[5];
-    value = regexec(&regex, buffer, 5, matches, 0);  
-    
-    if (value == 0) {
-        char* request_method = buffer + matches[1].rm_so;
-        char* file_requested = buffer + matches[2].rm_so;
-        char* host = buffer + matches[3].rm_so;
-        char* user_agent = buffer + matches[4].rm_so;
+    char* pattern = "([A-Z]+)[[:space:]]/(.+)H.+[[:space:]]Host: ([[:alnum:]]+:[[:digit:]]+)[[:ascii:]]+(User-Agent.+)";
+    size_t maxMatches = 1;
+    size_t maxGroups = 5;
 
-        debug("%s", request_method);
-        debug("%s", file_requested);
-        debug("%s", host);
-        debug("%s", user_agent);
+    regex_t compRegex;
+    regmatch_t groups[maxGroups];
+    unsigned int matches;
+    char * cursor; 
+    int execValue = 0;
 
-        if (strcmp(file_requested, " ")) {
-            file_requested = "index.html";
+    if (regcomp(&compRegex, pattern, 0)) {
+        write_to_log("Regex Failed To Compile", SRV_LOG_LVL);
+        handle_response_error("500 Server Error", fd);
+    }
+
+    matches = 0;
+    cursor = buffer;
+    char* groups_string = malloc(BUFFERSIZE * sizeof(char));
+    for(matches = 0; matches < maxMatches; matches ++){
+        execValue = regexec(&compRegex, cursor, maxGroups, groups, 0);
+
+     // if (execValue == REG_NOMATCH) {
+     //     write_to_log("Malformed HTTP header no match", SRV_LOG_LVL);
+     //     handle_response_error("400 Bad Request", fd);
+     // }
+
+        unsigned int group = 0;
+        unsigned int offset = 0;
+
+        for (group = 0; group < maxGroups; group++){
+            if(groups[group].rm_so == (size_t)-1)
+                break;
+
+            if (group == 0) 
+                offset = groups[group].rm_eo;
+
+            char cursor_copy[strlen(cursor)+1];
+            strcpy(cursor_copy, cursor);
+            cursor_copy[groups[group].rm_eo] = 0;
+            debug("%s", cursor_copy + groups[group].rm_so);
+            debug("%s", cursor_copy);
+            strncat(groups_string, (cursor_copy + groups[group].rm_so), strlen(cursor_copy)); 
+            strncat(groups_string, " ",  strlen(" "));
         }
-
-        handle_response_sucess(file_requested, request_method, fd);
+        
+        cursor += offset;
     }
-    else if (value == REG_NOMATCH) {
-        write_to_log("Malformed HTTP header no match", SRV_LOG_LVL);
-        handle_response_error("400 Bad Request", fd);
-    }else {
-        write_to_log("HTTP header match failed with error", SRV_LOG_LVL);
-        handle_response_error("500 Internal Server Error", fd);
-    }
-
-    regfree(&regex);
+    debug("%s", groups_string);
+    regfree(&compRegex);
 }
+
+//  void handle_http_request(char *buffer, int fd){
+//      regex_t regex;
+//      int value;
+//      write_to_log(buffer, ACCESS_LOG_LVL); 
+//      //char* pattern = "^[A-z]+ /([^ ]*) HTTP/1";
+//      char* pattern = "([A-Z])[[:space:]]/(.+)HTTP/1.1[[:space:]]Host:(.*)[[:space:]][A-z !-@\n]+(User-Agent.+)";
+//      regcomp(&regex, pattern, REG_EXTENDED);
+//      regmatch_t matches[5];
+//      value = regexec(&regex, buffer, 5, matches, 0);  
+//      
+//      if (value == 0) {
+//          char* request_method = buffer + matches[1].rm_so;
+//          char* file_requested = buffer + matches[2].rm_so;
+//          char* host = buffer + matches[3].rm_so;
+//          char* user_agent = buffer + matches[4].rm_so;
+
+//          debug("%s", request_method);
+//          debug("%s", file_requested);
+//          debug("%s", host);
+//          debug("%s", user_agent);
+
+//          if (strcmp(file_requested, " ")) {
+//              file_requested = "index.html";
+//          }
+
+//          handle_response_sucess(file_requested, request_method, fd);
+//      }
+//      else if (value == REG_NOMATCH) {
+//          write_to_log("Malformed HTTP header no match", SRV_LOG_LVL);
+//          handle_response_error("400 Bad Request", fd);
+//      }else {
+//          write_to_log("HTTP header match failed with error", SRV_LOG_LVL);
+//          handle_response_error("500 Internal Server Error", fd);
+//      }
+
+//      regfree(&regex);
+//  }
 
 void handle_response_sucess(char* requested_route, char* request_method,  int fd){
     
