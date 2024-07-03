@@ -68,6 +68,6 @@ void clear_log_files(){
 void build_log_text(char* log, char* line, char* logHeader){
     time_t t; time(&t);
     char* ct = strtok(ctime(&t), "\n");
-    snprintf(log, 512, "%s%s%s", ct, logHeader, line);
+    snprintf(log, 512, "%s%s\n%s", ct, logHeader, line);
 }
 
