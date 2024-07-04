@@ -19,6 +19,7 @@ $(SO_TARGET): $(TARGET) $(OBJECTS)
 
 build:
 	@mkdir -p build
+	@cp index.html build/index.html
 
 clean:
 	rm -rf build $(objects)

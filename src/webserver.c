@@ -47,7 +47,6 @@ int main(void){
         exit(1);
     }
     
-    write_to_log("listening for connections on http://localhost:9999", SRV_LOG_LVL);
     while(1){
         struct sockaddr_in connect_addr;
         socklen_t connect_addr_len = sizeof(connect_addr);
