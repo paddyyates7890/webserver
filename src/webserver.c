@@ -19,9 +19,7 @@ void* handle_connect(void* arg){
 
 int main(void){
     clear_log_files();
-    write_to_log("starting setup", SRV_LOG_LVL);    
-    write_to_log("access log setup", ACCESS_LOG_LVL);
-    write_to_log("error log setup", ERROR_LOG_LVL);
+    write_to_log("starting server configuration", SRV_LOG_LVL);    
 
     int server_fd;
     struct sockaddr_in server_addr;
@@ -47,6 +45,8 @@ int main(void){
         exit(1);
     }
     
+
+    write_to_log("Waiting For Connection on http://localhost:9999", SRV_LOG_LVL);
     while(1){
         struct sockaddr_in connect_addr;
         socklen_t connect_addr_len = sizeof(connect_addr);
@@ -56,7 +56,7 @@ int main(void){
             write_to_log("failed to accept connection", SRV_LOG_LVL); 
             continue;
         }
-
+        
         pthread_t thread_id;
         pthread_create(&thread_id, NULL, handle_connect, connect_fd);
         pthread_detach(thread_id);

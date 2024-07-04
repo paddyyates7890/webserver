@@ -106,6 +106,12 @@ int validate_result(char* result){
     return valid;
 }
 
+char* http_to_json(struct http_buffer* buffer){
+    char* json = malloc(sizeof(buffer));
+    memcpy(json, buffer, sizeof(buffer));
+
+    return json;
+}
 
 void freehttp(struct http_buffer* http){
     free(http->error);

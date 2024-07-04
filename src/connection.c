@@ -1,5 +1,4 @@
 #include "connection.h"
-#include "dbg.h"
 #include "http_parser.h"
 #include "log.h"
 #include "sysglobal.h"
@@ -19,8 +18,6 @@
 void connection(int fd){
     char* buffer = (char *)malloc(BUFFERSIZE * sizeof(char));
     ssize_t bytes_received = recv(fd, buffer, BUFFERSIZE, 0);
-    
-    write_to_log(buffer, ACCESS_LOG_LVL);
 
     if (bytes_received > 0) {
         handle_http_request(buffer, fd);
@@ -30,16 +27,18 @@ void connection(int fd){
 
     close(fd);
     free(buffer);
+
+    write_to_log("Connection Finsihed Thread Exiting", SRV_LOG_LVL);
+    pthread_exit(NULL);
 }
 
 void handle_http_request(char *buffer, int fd){
     struct http_buffer* http = parse_http(buffer);
-  //debug("%s", http->method);
-  //debug("%s", http->route);
-  //debug("%s", http->host);
-  //debug("%s", http->http);
-  //debug("%s", http->error);
     if (http->error == NULL) {
+        char* json = http_to_json(http);
+        write_to_log(json, ACCESS_LOG_LVL);
+        free(json);
+
         handle_response_sucess(http->route, http->method, fd);
     }else {
         handle_response_error(http->error, fd);

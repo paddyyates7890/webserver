@@ -28,6 +28,7 @@ struct http_buffer* parse_http(char* buffer);
 char* do_regex(char* buffer, char* pattern);
 int validate_result(char* result);
 void freehttp(struct http_buffer* http);
+char* http_to_json(struct http_buffer* buffer);
 
 #define toString(A) printf("method: %s host: %s route: %s http: %s", A->method, A->host, A->route, A->http); 
 
