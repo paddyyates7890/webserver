@@ -14,7 +14,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <pthread.h>
-
+#include "dbg.h"
 void connection(int fd){
     char* buffer = (char *)malloc(BUFFERSIZE * sizeof(char));
     ssize_t bytes_received = recv(fd, buffer, BUFFERSIZE, 0);
@@ -48,10 +48,9 @@ void handle_http_request(char *buffer, int fd){
 }
 
 void handle_response_sucess(char* requested_route, char* request_method,  int fd){
-    
     write_to_log("Handling Good Request", SRV_LOG_LVL);
-
-    if (strcmp(requested_route, "/")) {
+    
+    if (strcmp(requested_route, "/") == 0) {
         requested_route = "index.html"; // Make this configureable in the future
     }
 
