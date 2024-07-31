@@ -1,6 +1,7 @@
 #include "webserver.h"
 #include "log.h"
 #include "connection.h"
+#include "sysglobal.h"
 #include <stdio.h>
 #include <sys/types.h> 
 #include <sys/socket.h>
@@ -20,6 +21,7 @@ void* handle_connect(void* arg){
 int main(void){
     clear_log_files();
     write_to_log("starting server configuration", SRV_LOG_LVL);    
+    setup_sysglobals(); 
 
     int server_fd;
     struct sockaddr_in server_addr;

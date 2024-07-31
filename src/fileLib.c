@@ -6,6 +6,10 @@
 #include <stdio.h>
 #include <string.h>
 
+int fileExists(char *file){
+    !fopen(file, "r");
+}
+
 int filesz(FILE *f){
 	fseek(f, 0, SEEK_END);
 	int size = ftell(f);

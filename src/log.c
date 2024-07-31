@@ -3,42 +3,37 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <stdarg.h>
 #include "sysglobal.h"
 
-void write_to_log(char *line, int log_level){
+void write_to_log(char *line, int log_level, ...){
     int sysstatus = 0;
-    int debug = 1;
+    int debug = 0;
+    char logStr[1024];
+
+    va_list arrgs;
+    va_start(arrgs, log_level);
+    vsnprintf(logStr, 1024, line, arrgs); 
 
     if (sysstatus) {
-        write_to_console(line);
+        write_to_console(logStr);
     }else {
         switch (log_level) {
-            case ERROR_LOG_LVL:
-                write_to_error_log(line);
-                break;
             case ACCESS_LOG_LVL:
-                write_to_access_log(line);
+                write_to_access_log(logStr);
                 break;
             case SRV_LOG_LVL:
                 if (debug) {
-                    write_to_console(line);
+                    write_to_console(logStr);
                 }else {
-                    write_to_srv_log(line);
+                    write_to_srv_log(logStr);
                 }
                 break;
             default:
-                write_to_console(line);
+                write_to_console(logStr);
         }
     }
 }
-
-void write_to_error_log(char *line){
-    char* logHeader = " ERROR LOG: ";
-    char log[512];
-    build_log_text(log, line, logHeader);
-    write_line(log, ERROR_LOG);
-}
-
 
 void write_to_access_log(char *line){
     char* logHeader = " ACCESS LOG: ";
@@ -60,7 +55,6 @@ void write_to_console(char* line){
 }
 
 void clear_log_files(){
-   clearFile(ERROR_LOG);
    clearFile(ACCESS_LOG);
    clearFile(SRV_LOG);
 }
@@ -68,6 +62,6 @@ void clear_log_files(){
 void build_log_text(char* log, char* line, char* logHeader){
     time_t t; time(&t);
     char* ct = strtok(ctime(&t), "\n");
-    snprintf(log, 512, "%s%s\n%s", ct, logHeader, line);
+    snprintf(log, 512, "%s%s: %s", ct, logHeader, line);
 }
 

@@ -4,6 +4,7 @@
 #ifndef _FILELIB_ACTIVE
 #define _FILELIB_ACTIVE
 
+int fileExists(char* file);
 int filesz(FILE *f);
 FILE *open_file_read(char *file);
 FILE *open_file_write(char *file);

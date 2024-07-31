@@ -72,7 +72,6 @@ void handle_response_sucess(char* requested_route, char* request_method,  int fd
 
     snprintf(header, BUFFERSIZE, "HTTP/1.1 200 OK\r\nServer: %s\r\nDate: %s\r\nContent-size: %ld\r\nContent-Type: text/html\r\n\r\n", server, date, file_size);
     write_to_log("Return Header Created", SRV_LOG_LVL);
-    write_to_log(header, SRV_LOG_LVL);
 
     int res_len = 0;
     memcpy(response, header, strlen(header));
@@ -91,16 +90,19 @@ void handle_response_error(char* code, int fd){
     char* response = (char *)malloc(BUFFERSIZE * 2 * sizeof(char)); 
     snprintf(response, BUFFERSIZE, "HTTP/1.1 %s\r\n Content-type: text/html\r\n\r\n<div align='center'><h1>%s</h1></div>", code, code);
     write_to_log("Error Responce Created", SRV_LOG_LVL);
-    write_to_log(response, SRV_LOG_LVL);
     send_response(fd, response, strlen(response));
-    
+     
     pthread_exit(NULL);
     write_to_log("listening for connection on localhost:9999", SRV_LOG_LVL);
 }
 
 void send_response(int fd, char* response, int response_len){
-    send(fd, response, response_len, 0);
-    free(response);
     write_to_log("Sending Responce", SRV_LOG_LVL);
+    long sent = send(fd, response, response_len, 0);
+    write_to_log("sending code: %d", SRV_LOG_LVL, sent);
+    if (sent < 0) {
+        pthread_exit(NULL);
+    }
+    free(response);
     return;
 }
