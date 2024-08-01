@@ -1,5 +1,5 @@
 #include "connection.h"
-#include "http_parser.h"
+#include "../utils/http_parser.h"
 #include "log.h"
 #include "sysglobal.h"
 #include <stdio.h>
@@ -14,7 +14,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <pthread.h>
-#include "dbg.h"
+#include "../utils/dbg.h"
 void connection(int fd){
     char* buffer = (char *)malloc(BUFFERSIZE * sizeof(char));
     ssize_t bytes_received = recv(fd, buffer, BUFFERSIZE, 0);
@@ -87,6 +87,7 @@ void handle_response_sucess(char* requested_route, char* request_method,  int fd
 }
 
 void handle_response_error(char* code, int fd){
+    write_to_log("Responce rejected with code %s", SRV_LOG_LVL, code);
     char* response = (char *)malloc(BUFFERSIZE * 2 * sizeof(char)); 
     snprintf(response, BUFFERSIZE, "HTTP/1.1 %s\r\n Content-type: text/html\r\n\r\n<div align='center'><h1>%s</h1></div>", code, code);
     write_to_log("Error Responce Created", SRV_LOG_LVL);

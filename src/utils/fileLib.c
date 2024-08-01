@@ -7,7 +7,7 @@
 #include <string.h>
 
 int fileExists(char *file){
-    !fopen(file, "r");
+    return !fopen(file, "r");
 }
 
 int filesz(FILE *f){

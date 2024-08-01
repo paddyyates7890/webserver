@@ -1,4 +1,5 @@
 #include "sysglobal.h"
+#include "../utils/linkedList.h"
 #include "syslog.h"
 #include "fileLib.h"
 #include "log.h"
@@ -13,5 +14,13 @@ void setup_sysglobals(){
 }
 
 void read_server_conf(){
-    write_to_log("SERVER CONF NOT IMPLEMENTED", SRV_LOG_LVL);
+    write_to_log("Reading configuration file and configureing server", SRV_LOG_LVL);
+    linkedList *conf;
+
+    conf = rFileList(SERVER_CONF);
+    LLFOREACH(conf, first, next, cur){
+        char* line = cur->value;
+        // String functions.
+    } 
+
 }

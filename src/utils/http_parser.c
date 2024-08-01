@@ -1,6 +1,6 @@
 #include "http_parser.h"
 #include "dbg.h"
-#include "log.h"
+#include "../server/log.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
