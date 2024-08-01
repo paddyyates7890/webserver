@@ -119,5 +119,5 @@ void freehttp(struct http_buffer* http){
     free(http->host);
     free(http->route);
     free(http->http);
-
+    free(http);
 }

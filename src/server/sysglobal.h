@@ -8,7 +8,23 @@
 
 #define BUFFERSIZE 104857600
 
+struct sysglobal;
+typedef struct sysglobal{
+    int port;
+    char* default_location;
+
+
+} sysglobal;
+
+// global init
 void setup_sysglobals();
 void read_server_conf();
+void setValue(char* name, char* value);
 
+// global retrieval
+int getport();
+char* getdefaultlocation();
+
+// free
+void freeconfig();
 #endif // !DEBUG
