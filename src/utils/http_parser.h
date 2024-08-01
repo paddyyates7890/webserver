@@ -20,7 +20,7 @@ struct http_buffer {
 
 
 #define METHOD_PATTERN "(.*) \\/"
-#define HOST_PATTERN "Host: (.*) [A-z]"
+#define HOST_PATTERN "Host: (.*) [A-z] "
 #define ROUTE_PATTERN ".* (.*) H"
 #define HTTP_PATTERN ".* (HTTP.*).* [A-z]"
 

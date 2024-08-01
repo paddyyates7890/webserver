@@ -36,9 +36,7 @@ void connection(int fd){
 void handle_http_request(char *buffer, int fd){
     struct http_buffer* http = parse_http(buffer);
     if (http->error == NULL) {
-        char* json = http_to_json(http);
-        write_to_log(json, ACCESS_LOG_LVL);
-        free(json);
+        write_to_log("%s %s %s", ACCESS_LOG_LVL, http->method, http->host, http->route);
 
         handle_response_sucess(http->route, http->method, fd);
     }else {
@@ -52,7 +50,7 @@ void handle_response_sucess(char* requested_route, char* request_method,  int fd
     write_to_log("Handling Good Request", SRV_LOG_LVL);
     
     if (strcmp(requested_route, "/") == 0) {
-        requested_route = getdefaultlocation(); // Make this configureable in the future
+        requested_route = getdefaultlocation();
     }
 
     int file_fd = open(requested_route, O_RDONLY);
