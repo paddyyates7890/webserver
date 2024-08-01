@@ -5,9 +5,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 int fileExists(char *file){
-    return !fopen(file, "r");
+    return !access(file, F_OK);
 }
 
 int filesz(FILE *f){
