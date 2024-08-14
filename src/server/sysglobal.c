@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-sysglobal* configuration;
+static sysglobal* configuration;
 
 void setup_sysglobals(){
     configuration = calloc(1, sizeof(sysglobal));

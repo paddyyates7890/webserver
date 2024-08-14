@@ -20,9 +20,9 @@ struct http_buffer {
 
 
 #define METHOD_PATTERN "(.*) \\/"
-#define HOST_PATTERN "Host: (.*) [A-z] "
+#define HOST_PATTERN "Host: (.*:\\d*)"
 #define ROUTE_PATTERN ".* (.*) H"
-#define HTTP_PATTERN ".* (HTTP.*).* [A-z]"
+#define HTTP_PATTERN ".* (HTTP\\/\\d*)"
 
 struct http_buffer* parse_http(char* buffer);
 char* do_regex(char* buffer, char* pattern);
@@ -30,6 +30,6 @@ int validate_result(char* result);
 void freehttp(struct http_buffer* http);
 char* http_to_json(struct http_buffer* buffer);
 
-#define toString(A) printf("method: %s host: %s route: %s http: %s", A->method, A->host, A->route, A->http); 
+#define toString(A) printf("method: %s \n\nhost: %s \n\nroute: %s \n\nhttp: %s", A->method, A->host, A->route, A->http); 
 
 #endif

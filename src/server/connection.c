@@ -35,6 +35,7 @@ void connection(int fd){
 
 void handle_http_request(char *buffer, int fd){
     struct http_buffer* http = parse_http(buffer);
+    toString(http);
     if (http->error == NULL) {
         write_to_log("%s %s %s", ACCESS_LOG_LVL, http->method, http->host, http->route);
 

@@ -24,6 +24,10 @@ build:
 clean:
 	rm -rf build $(objects)
 
+clean-hard:
+	rm -rf build $(objects)
+	find -name *.o | xargs rm
+
 BADFUNCS='[^_.>a-zA-Z0-9](str(n?cpy|n?cat|xfrm|n?dup|str|pbrk|tok|_)|stpn?cpy|a?sn?printf|byte_)'
 
 check:
