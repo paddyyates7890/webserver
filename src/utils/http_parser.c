@@ -1,6 +1,8 @@
 #include "http_parser.h"
-#include "dbg.h"
 #include "../server/log.h"
+#include "dbg.h"
+#include "linkedList.h"
+#include "pstring.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -17,6 +19,12 @@ struct http_buffer* create_http_buffer(){
 }
 
 struct http_buffer* parse_http(char* buffer){
+    printf("%s\n", buffer);
+    linkedList *thing = splitstr(buffer, '\n');
+    LLtoString(thing);
+    fflush(stdout);
+    LLdestroy(thing);
+
     struct http_buffer* parsed = create_http_buffer();
     char* method = NULL;
     char* host = NULL;
@@ -98,7 +106,6 @@ int validate_result(char* result){
     int valid = 1;
     
     if (strcmp(result, "500 Internal Server Error") == 0 || strcmp(result, "") == 0) {
-        debug("%s", result);
         write_to_log("An Error Occured While Parsing HTTP Buffer", SRV_LOG_LVL);
         valid = 0;
     }

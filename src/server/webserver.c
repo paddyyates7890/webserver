@@ -20,7 +20,7 @@ void* handle_connect(void* arg){
 }
 
 void term_handle(int sig){
-    write_to_log("server shutdown", SRV_LOG_LVL);
+    write_to_log("server shutdown init", SRV_LOG_LVL);
     freeconfig();
     pthread_exit(NULL);
     exit(1);

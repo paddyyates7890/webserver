@@ -88,3 +88,17 @@ void *LLindex(linkedList *list, int index){
     return found->value;
 
 }
+
+void LLtoString(linkedList *list){
+    int count = list->count;
+
+    for (int i = 0; i < count; i++) {
+        char* value = LLindex(list, i);
+        printf("%d: %s ", i, value);
+    }
+
+    printf("\n");
+    fflush(stdout);
+}
+
+

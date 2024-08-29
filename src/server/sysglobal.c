@@ -32,7 +32,7 @@ void read_server_conf(){
     conf = rFileList(SERVER_CONF);
     LLFOREACH(conf, first, next, cur){
         char* line = cur->value;
-        splitLine = split(line, ' ');
+        splitLine = splitstr(line, ' ');
         name = LLindex(splitLine, 0);
         value = LLindex(splitLine, 1);
         
