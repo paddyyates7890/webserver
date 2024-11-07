@@ -29,7 +29,7 @@ void connection(int fd){
     close(fd);
     free(buffer);
 
-    write_to_log("Connection Finsihed Thread Exiting", SRV_LOG_LVL);
+    write_to_log("Connection Finished Thread Exiting", SRV_LOG_LVL);
     pthread_exit(NULL);
 }
 
@@ -38,8 +38,7 @@ void handle_http_request(char *buffer, int fd){
 
     if (http->error == NULL) {
         write_to_log("%s %s %s", ACCESS_LOG_LVL, http->method, http->host, http->route);
-
-        handle_response_sucess(http->route, http->method, fd);
+        handle_response_success(http->route, http->method, fd);
     }else {
         handle_response_error(http->error, fd);
     }
@@ -47,7 +46,7 @@ void handle_http_request(char *buffer, int fd){
     freehttp(http);
 }
 
-void handle_response_sucess(char* requested_route, char* request_method,  int fd){
+void handle_response_success(char* requested_route, char* request_method,  int fd){
     write_to_log("Handling Good Request", SRV_LOG_LVL);
     
     if (strcmp(requested_route, "/") == 0) {

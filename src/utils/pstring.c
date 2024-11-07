@@ -2,17 +2,29 @@
 #include "linkedList.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
+/** 
+ * split a char array by <split> and return a linkedList of the result
+ * @param str char* the string to split
+ * @param split char the character to split on
+ * @return splitStr LinkedList* the split string as a linked list
+*/
 linkedList* splitstr(char* str, char split){
     linkedList* splitStr = create_list();
     int strLen = strlen(str);
-    int i = 0;
-    int lastSplit = 0;
-    for (i = 0; i < strLen; i++) {
-        if (str[i] == split || str[i] == '\0') {
-            char* substring = substr(lastSplit, i, str);
-            LLpush(splitStr, substring);
-            lastSplit = i;
+    char tmpStr[strLen];
+
+    for (int i=0; i < strLen; i++){
+        if (str[i] != split){
+            char ch = str[i];
+            strncat(tmpStr, &ch, 1);
+            printf("%s", tmpStr);
+        }else {
+            LLpush(splitStr, tmpStr);
+            char tmpStr[strLen];
+
+            printf("%s", tmpStr);
         }
     }
 

@@ -19,8 +19,8 @@ struct http_buffer* create_http_buffer(){
 }
 
 struct http_buffer* parse_http(char* buffer){
-    printf("%s\n", buffer);
     linkedList *thing = splitstr(buffer, '\n');
+    LLtoString(thing);
     LLtoString(thing);
     fflush(stdout);
     LLdestroy(thing);

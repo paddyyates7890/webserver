@@ -13,7 +13,7 @@
 
 void* handle_connect(void* arg){
     int client_fd = *((int *)arg);
-    write_to_log("Connection recieved", SRV_LOG_LVL);
+    write_to_log("Connection received", SRV_LOG_LVL);
     connection(client_fd);
     free(arg);
     return NULL;
