@@ -19,12 +19,6 @@ struct http_buffer* create_http_buffer(){
 }
 
 struct http_buffer* parse_http(char* buffer){
-    linkedList *thing = splitstr(buffer, '\n');
-    LLtoString(thing);
-    LLtoString(thing);
-    fflush(stdout);
-    LLdestroy(thing);
-
     struct http_buffer* parsed = create_http_buffer();
     char* method = NULL;
     char* host = NULL;
@@ -67,7 +61,7 @@ struct http_buffer* parse_http(char* buffer){
         parsed->error = malloc(sizeof(http));
         parsed->error = http;
     }
-    write_to_log("Sucessfully Parsed HTTP Buffer", SRV_LOG_LVL);
+    write_to_log("Successfully Parsed HTTP Buffer", SRV_LOG_LVL);
     return parsed;
 }
 
@@ -106,7 +100,7 @@ int validate_result(char* result){
     int valid = 1;
     
     if (strcmp(result, "500 Internal Server Error") == 0 || strcmp(result, "") == 0) {
-        write_to_log("An Error Occured While Parsing HTTP Buffer", SRV_LOG_LVL);
+        write_to_log("An Error Occurred While Parsing HTTP Buffer", SRV_LOG_LVL);
         valid = 0;
     }
 
