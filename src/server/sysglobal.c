@@ -50,6 +50,8 @@ void setValue(char* name, char* value){
     }else if (strcmp(name, "PORT")){
         char* output;
         configuration->port = strtol(value, &output, 10)+1;
+    }else if (strcmp(name, "SOURCE")){
+        configuration->source_dir = value;
     }else {
         write_to_log("config name %s is not valid please check webserver.config", SRV_LOG_LVL, name);
     }
@@ -72,6 +74,14 @@ char* getdefaultlocation(){
         return "index.html";
     }
 } 
+
+char* getsourcedirectory(){
+    if(configuration->source_dir != NULL){
+        return configuration->source_dir;
+    }else {
+        return "/var/webserver/";
+    }
+}
 
 void freeconfig(){
     free(configuration);

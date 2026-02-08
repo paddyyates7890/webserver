@@ -33,11 +33,17 @@ int main(void){
     setup_sysglobals(); 
 
     int server_fd;
+    int opt = 1;
     struct sockaddr_in server_addr;
 
     if((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
         write_to_log("socket failed", SRV_LOG_LVL);
         exit(1);
+    }
+    
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        write_to_log("failed setting stocket options", SRV_LOG_LVL);
+        write_to_log("[WARNING] SYSTEM FAILED TO SET STOCKET OPTIONS", SRV_LOG_LVL);
     }
 
     server_addr.sin_family = AF_INET;
@@ -46,13 +52,13 @@ int main(void){
     
     if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
         write_to_log("failed to bind to socket", SRV_LOG_LVL);
-        write_to_log("SYSTEM HAS FAILED TO START EXITING", SRV_LOG_LVL);
+        write_to_log("[ERROR] SYSTEM HAS FAILED TO START EXITING", SRV_LOG_LVL);
         exit(1);
     }
 
     if (listen(server_fd, 10) < 0) {
         write_to_log("failed to start socket listener", SRV_LOG_LVL);
-        write_to_log("SYSTEM HAS FAILED TO START EXITING", SRV_LOG_LVL);
+        write_to_log("[ERROR] SYSTEM HAS FAILED TO START EXITING", SRV_LOG_LVL);
         exit(1);
     }
     

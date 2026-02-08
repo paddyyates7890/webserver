@@ -48,12 +48,19 @@ void handle_http_request(char *buffer, int fd){
 
 void handle_response_success(char* requested_route, char* request_method,  int fd){
     write_to_log("Handling Good Request", SRV_LOG_LVL);
-    
+
+    char* source_dir = getsourcedirectory();
+
     if (strcmp(requested_route, "/") == 0) {
         requested_route = getdefaultlocation();
     }
+    
+    int route_size = strlen(source_dir) + strlen(requested_route) + 1;
+    char* full_requested_route = malloc(route_size);
+    strncpy(full_requested_route, source_dir, strlen(source_dir));
+    strncat(full_requested_route, requested_route, strlen(requested_route));
 
-    int file_fd = open(requested_route, O_RDONLY);
+    int file_fd = open(full_requested_route, O_RDONLY);
     if (file_fd == -1) {
         handle_response_error("404 Not Found", fd);
     }
@@ -65,7 +72,7 @@ void handle_response_success(char* requested_route, char* request_method,  int f
     fstat(file_fd, &file_stat);
     off_t file_size = file_stat.st_size;
     
-    char* server = "patrick/0.01";
+    char* server = "patrick/0.02";
     time_t t;time(&t);
     char* date = strtok(ctime(&t), "\n");
 

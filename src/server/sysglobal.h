@@ -12,7 +12,7 @@ struct sysglobal;
 typedef struct sysglobal{
     int port;
     char* default_location;
-
+    char* source_dir;
 
 } sysglobal;
 
@@ -24,7 +24,7 @@ void setValue(char* name, char* value);
 // global retrieval
 int getport();
 char* getdefaultlocation();
-
+char* getsourcedirectory();
 // free
 void freeconfig();
 #endif // !DEBUG
